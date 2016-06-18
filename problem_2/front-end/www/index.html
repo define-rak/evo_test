@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script> 
+</head>
+<body>
+    <div id='content'></div>
+
+    <script type="text/babel">
+        var FormContainer = React.createClass({
+            getInitialState: function() {
+                return {
+                    message: "",
+                    name: "",
+                    epithet: ""
+                };
+            },
+
+            handleSubmit: function(event) {
+                event.preventDefault();
+
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.open("GET", "http://urbansafety.cloudapp.net:5200/epithet?name=" + this.state.name, false);
+                xmlhttp.send();
+
+                var json = JSON.parse(xmlhttp.responseText);
+                
+                this.setState({ epithet: json.epithet });
+                this.setState({ message: "Рад тебя видеть снова, " + this.state.name + " " + json.epithet + "."});
+            },
+
+            handleNameChange: function(event) {
+                this.setState({ name: event.target.value });
+            },
+
+            render: function() {
+                return (
+                    <div className="form-container">
+                        <form onSubmit={this.handleSubmit}>
+                            <p><input type="text" className="name-field" value={this.state.name} onChange={this.handleNameChange}/></p>
+                            <p><input type="submit" value="Проверить" /></p>
+                            <p>{this.state.message}</p>
+                        </form>
+                    </div>
+                );
+            }
+        });
+
+        ReactDOM.render(
+            <FormContainer />,
+            document.getElementById("content")
+        );
+    </script>
+</body>
+</html>
